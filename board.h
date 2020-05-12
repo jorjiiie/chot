@@ -1,40 +1,37 @@
 #include <vector>
 #include <string>
 #include <cmath>
-#include<iostream>
+#include <iostream>
 
 class board {
  int pos[8][8][2],atk[8][8][2];
  public:
-   std::string printBoard(void);
-   void startGame(void);
-   void setPos(int, int, int);
-   void swp(int, int, int, int);
-   bool legal(int, int, int, int, int);
-   bool legal(int, int, int, int, std::vector<bool>);
-   std::vector<bool> getMoves(int);
-   int retLoc(int, int);
-   std::string printRaw(void);
-   bool checkDiag(int, int, int, int,int);
-   bool checkStr(int, int, int, int, int);
+   std::string printBoard(void); // print board
+   void startGame(void); // starts game with default setup
+   void setPos(int, int, int, int); // testing method to just throw something somewhere (swp without legal checking)
+   void swp(int, int, int, int); // swap , also the move
+   bool legal(int, int, int, int, int); // if move is legal
+   bool legal(int, int, int, int, std::vector<bool>); // if move is legal (already has types of moves)
+   std::vector<bool> getMoves(int); // get valid types of moves
+   int retLoc(int, int); // return the piece at a certain position (no team)
+   std::string printRaw(void); // printing the board without color or side stuff
+   bool checkDiag(int, int, int, int,int); // check collisions on a diagonal during a move
+   bool checkStr(int, int, int, int, int); // check collisions on a line during a move
 };
+
 bool board::checkStr(int ul, int pn, int x, int y, int d) {
   if (d > 7 || x > 7 || y > 7 || d < 0 || x < 0 || y < 0) return false;
-  int use = 0, other = 0;
-  if (ul) {
-    use = y;
-  }
-  else {
-    use = x;
-  }
+  int use = 0;
   d+=pn;
   if (ul){
+    use = y;
     while (abs(d-use) > 0) {
       if(retLoc(x,d))
         return false;
       d+=pn;
       }
   } else {
+    use = x;
     while (abs(d-use) > 0) {
       if (retLoc(d,y))
         return false;
