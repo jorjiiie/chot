@@ -15,8 +15,34 @@ class board {
    std::vector<bool> getMoves(int);
    int retLoc(int, int);
    std::string printRaw(void);
+   bool checkDiag(int, int, int, int,int);
+   bool checkStr(int, int, int, int, int);
 };
-
+bool board::checkStr(int ul, int pn, int x, int y, int d) {
+  if (d > 7 || x > 7 || y > 7 || d < 0 || x < 0 || y < 0) return false;
+  int use = 0, other = 0;
+  if (ul) {
+    use = y;
+  }
+  else {
+    use = x;
+  }
+  d+=pn;
+  if (ul){
+    while (abs(d-use) > 0) {
+      if(retLoc(x,d))
+        return false;
+      d+=pn;
+      }
+  } else {
+    while (abs(d-use) > 0) {
+      if (retLoc(d,y))
+        return false;
+      d+=pn;
+    }
+  }
+  return true;
+}
 std::string board::printRaw() {
   std::string ret = "";
   for (int i = 0; i < 8; i++) {
@@ -84,22 +110,40 @@ bool board::legal(int id, int x, int y, int a, int b) {
   if (pos[7-x][y][1] == pos[7-a][b][1]) return false;
   std::vector<bool> moves = getMoves(id);
   if (moves[0]) {
+    int quad;
     if (abs(x-a) == abs(y-b)) return true;
   }
   if (moves[1]) {
-    if (x == a || y == b) return true;
+    int ul,pn,d;
+    if (x == a || y == b) {
+      if (x == a) {
+        // std::cout << " change in y \n";
+        ul = 1;
+        d = b;
+        if (y > b) pn = 1;
+        else pn = -1;
+      } else {
+        // std::cout << "change in x\n";
+        ul = 0;
+        d = a;
+        if (x > a) pn = 1;
+        else pn = -1;
+      }
+      // std::cout << ul << " " << pn << " " << x << " " << y << " " << d << "\n";
+      return checkStr(ul, pn, x, y, d);
+    }
   }
   if (moves[2]) {
     if ((abs(x-a) == 1 && abs(y-b) == 2) || (abs(x-a)==2 && abs(y-b) == 1)) return true;
   }
   if (moves[3]) {
-    if (pos[x][y][1] == 2) {
-       if (x == 6) return (abs(x-a) <=2);
-       else return abs(x-a) ==1;
+    if (pos[7-x][y][1] == 1) {
+       if (x == 6) return (x-a <=2 && x-a > 0);
+       else return x-a ==1;
     }
     else {
-      if (x == 1) return (abs(x-a) <= 2);
-      else return abs(x-a) == 1;
+      if (x == 1) return (a-x <= 2 && a-x > 0);
+      else return a-x == 1;
     }
   }
   if (moves[4]) {
@@ -109,6 +153,7 @@ bool board::legal(int id, int x, int y, int a, int b) {
 }
 
 void board::swp(int x, int y, int a, int b) {
+  if (x > 7 || x < 0 || y > 7 || y < 0|| a > 7 || a < 0 || b > 7 || b < 0) return;
   if (legal(pos[7-x][y][0],x,y,a,b)) {
     a = 7-a;
     // b = 7-b;
